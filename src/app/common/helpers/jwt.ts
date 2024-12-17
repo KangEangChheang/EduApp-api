@@ -17,4 +17,14 @@ export class JwtHelper {
       throw new Error('Invalid or expired token');
     }
   }
+
+  generateToken(payload: any) {
+    try {
+      const token = jwt.sign(payload, this.secretKey);
+      return token;
+    } catch (error) {
+      console.error('Error generating token:', error);
+      throw new Error('Failed to generate token');
+    }
+  }
 }

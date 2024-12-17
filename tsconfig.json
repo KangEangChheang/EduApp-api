@@ -6,10 +6,17 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
+    "moduleDetection": "force",
     "target": "ES2021",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
+
+    "baseUrl": "./src",
+    "paths": {
+      "database": ["database"]  // Instead of "src/database"
+    },
+    "moduleResolution": "node",
+
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,
@@ -17,5 +24,7 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false
-  }
+  },
+  
+  "include": ["src"],
 }

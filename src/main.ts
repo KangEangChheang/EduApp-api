@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import { WsAdapter } from '@nestjs/platform-ws'; // WebSocket Adapter
 import { ConfigService } from '@nestjs/config';
+import "colors"
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,5 +19,7 @@ async function bootstrap() {
 
   // Start the application
   await app.listen(process.env.PORT);
+
+  console.log(`\nApplication is running on: ${`http://localhost:${process.env.PORT}`.blue}`.yellow);
 }
 bootstrap();

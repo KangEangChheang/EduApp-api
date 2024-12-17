@@ -1,5 +1,5 @@
 import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
-import { JwtHelper } from 'src/app/common/helpers/jwt';
+import { JwtHelper } from 'app/common/helpers/jwt';
 
 @Injectable()
 export class GuestGuard implements CanActivate {

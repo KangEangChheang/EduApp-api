@@ -1,8 +1,8 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { LoggerMiddleware } from './common/middlewares/logger/log.middleware';
 import { LogService } from './common/middlewares/logger/log.service';
-import { DatabaseModule } from 'src/database/database.module';
-import { ConfigModule } from 'src/config/config.module';
+import { DatabaseModule } from 'database/database.module';
+import { ConfigModule } from '@nestjs/config';
 import { HttpModule } from './http/http.module';
 import { WsModule } from './ws/ws.module';
 
@@ -14,7 +14,10 @@ import { WsModule } from './ws/ws.module';
     WsModule,
     // Other module ======================================
     DatabaseModule,
-    ConfigModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    })
   ],
   providers: [
     LogService, // add logger service
