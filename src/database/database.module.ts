@@ -15,13 +15,13 @@ import { SeederInitializer } from './seeders/seed-initializer';
     SequelizeModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        dialect: configService.get<string>('DB_DIALECT', 'postgres') as Dialect,
-        host: configService.get<string>('DB_HOST', 'localhost'),
-        port: configService.get<number>('DB_PORT', 5432),
-        username: configService.get<string>('DB_USER', 'postgres'),
-        password: configService.get<string>('DB_PASSWORD', 'password'),
-        database: configService.get<string>('DB_NAME', 'eduapp'),
+      useFactory: async () => ({
+        dialect: process.env.DB_DIALECT as Dialect,
+        host: process.env.DB_HOST,
+        port: Number(process.env.DB_PORT),
+        username: process.env.DB_USERNAME,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_DATABASE,
         autoLoadModels: false, // Automatically loads models (e.g., User)
         synchronize: false,    // Syncs models with DB schema, avoid in production
         logging: false,
