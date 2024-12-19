@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Dialect } from 'sequelize';
-import { generateIdHooks } from './hook/generate-id.hook';
+import { generateIdHooks } from './hook/generate-id.hook';  
 import Models from '../models';
 import { MigrationInitializer } from './migrations/migration-initializer';
 import { SeederInitializer } from './seeders/seed-initializer';
@@ -19,9 +19,9 @@ import { SeederInitializer } from './seeders/seed-initializer';
         dialect: process.env.DB_DIALECT as Dialect,
         host: process.env.DB_HOST,
         port: Number(process.env.DB_PORT),
-        username: process.env.DB_USERNAME,
+        username: process.env.DB_USER,
         password: process.env.DB_PASSWORD,
-        database: process.env.DB_DATABASE,
+        database: process.env.DB_NAME,
         autoLoadModels: false, // Automatically loads models (e.g., User)
         synchronize: false,    // Syncs models with DB schema, avoid in production
         logging: false,
