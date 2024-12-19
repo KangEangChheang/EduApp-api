@@ -5,8 +5,12 @@ import { DatabaseModule } from 'database/database.module';
 import { ConfigModule } from '@nestjs/config';
 import { HttpModule } from './http/http.module';
 import { WsModule } from './ws/ws.module';
+import { AppController } from './app.controller';
 
 @Module({
+  controllers: [
+    AppController
+  ],
   imports: [
     // all http module ======================================
     HttpModule,

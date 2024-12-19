@@ -1,8 +1,8 @@
-FROM node:18.15-alpine
+FROM node:18.20.5-alpine
 
 WORKDIR /myapp
 COPY package*.json ./
 COPY tsconfig.json ./
-RUN npm install
+RUN npm install --include=dev && npm rebuild bcrypt
 COPY . .
 CMD npm run start:dev

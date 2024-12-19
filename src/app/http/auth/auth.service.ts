@@ -2,7 +2,7 @@ import { BadRequestException, ForbiddenException, Injectable, NotFoundException 
 import { LoginDtos, RegisterDtos } from './auth.dtos';
 import { UserRepository } from '../user/user.repository';
 import { ConfigService } from '@nestjs/config';
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { UserRole } from 'models/user/user-role.model';
 
 @Injectable()
