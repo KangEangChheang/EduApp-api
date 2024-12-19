@@ -38,12 +38,13 @@ export class User extends BaseModel<User> {
     }
 
     @BeforeBulkCreate // for seeder because we use bulk create
-    static bulkHashPassword(users: User[]) {
-        users.map(async (user) => {
-            if (user.password) {
-                user.password = await bcrypt.hash(user.password, 10);
-            }
-
-        });
+    static async bulkHashPassword(users: User[]) {
+        await Promise.all(
+            users.map(async (user) => {
+                if (user.password) {
+                    user.password = await bcrypt.hash(user.password, 10);
+                }
+            })
+        );
     }
 }
