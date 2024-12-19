@@ -1,7 +1,7 @@
 import { Table, Column, ForeignKey, BelongsTo, BeforeCreate, BeforeBulkCreate, BeforeUpdate } from 'sequelize-typescript';
 import { UserRole } from './user-role.model';
 import { BaseModel } from '../base.model';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 
 @Table
 export class User extends BaseModel<User> {
