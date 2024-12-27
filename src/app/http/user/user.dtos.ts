@@ -6,19 +6,11 @@ export class UserDtos {
     avatar: string;
     created_at: Date;
     email: string;
-    role: {
-        id: string;
-        role: string;
-    };
-
     constructor(user: User) {
+        this.id = user.id;
         this.username = user.username;
         this.avatar = user.avatar;
         this.created_at = user.createdAt;
         this.email = user.email;
-        this.role = {
-            id: user.user_role_id,
-            role: user.user_role.role
-        };
     }
 }

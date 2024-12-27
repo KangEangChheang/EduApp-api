@@ -1,9 +1,8 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { LoginDtos, RegisterDtos } from './auth.dtos';
+import { LoginDtos, RegisterDtos } from './auth-val.dtos';
 import { UserRepository } from '../user/user.repository';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcryptjs';
-import { UserRole } from 'models/user/user-role.model';
 
 @Injectable()
 export class AuthService {
@@ -24,23 +23,22 @@ export class AuthService {
             if(!isMatch) throw new ForbiddenException("Email or Password is incorrect");   
             
             //set user to be active
-            user.isActive = true;
+            user.is_active = true;
             await user.save();
 
-            return user;
+            return user.dataValues;
 
         } catch(error) {
+            console.log(error)
             throw new BadRequestException(error.message);
         }
     }
 
     async register(body: RegisterDtos){
         try {
-            const default_role = await UserRole.findOne({ where: { role: 'Student' }});
             const user = {
                 ...body,
                 isActive: true,
-                user_role_id: default_role.id
             }
 
             const new_user = await this._user_rep.createOne(user);
@@ -48,8 +46,27 @@ export class AuthService {
             return new_user;
         }
         catch(error) {  
+            console.log(error)
             throw new BadRequestException(error.message);
         }
+    }
+
+    async loginGoogle(google_user: any){
+        const { email, name, sub, picture } = google_user;
+
+        const data = {
+            email: email,
+            username: name,
+            google_id: sub,
+            is_active: true,
+            avatar: picture,
+            password: '',
+        }
+
+        const user = await this._user_rep.findorCreateByGoogleId(data);
+        if(user) return user;
+        else throw new NotFoundException("User not found or something went wrong try again");
+        
     }
     
 }
