@@ -37,7 +37,6 @@
     "class-validator": "^0.14.1",
     "colors": "^1.4.0",
     "jsonwebtoken": "^9.0.2",
-    "nanoid": "^5.0.9",
     "pg": "^8.13.1",
     "pg-hstore": "^2.3.4",
     "readline-sync": "^1.4.10",

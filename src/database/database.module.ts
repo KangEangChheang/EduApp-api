@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Dialect } from 'sequelize';
-import { generateIdHooks } from './hook/generate-id.hook';  
 import Models from '../models';
 import { MigrationInitializer } from './migrations/migration-initializer';
 import { SeederInitializer } from './seeders/seed-initializer';
@@ -25,11 +24,6 @@ import { SeederInitializer } from './seeders/seed-initializer';
         autoLoadModels: false, // Automatically loads models (e.g., User)
         synchronize: false,    // Syncs models with DB schema, avoid in production
         logging: false,
-
-        // add some more function and logic before and after using database function like before creating a row or after creating a row
-        hooks: {
-          ...generateIdHooks
-        },
         models: Models
       }),
     }),

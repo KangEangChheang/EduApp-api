@@ -1,8 +1,9 @@
-import { Column, Model, Table } from "sequelize-typescript";
+import { AutoIncrement, Column, Model, Table } from "sequelize-typescript";
 
 @Table
 export class BaseModel<T> extends Model<T> {
-    @Column({ primaryKey: true, unique: true})
+    @AutoIncrement
+    @Column({ primaryKey: true, unique: true })
     id?: string;
 
 
