@@ -4,9 +4,9 @@ import { Injectable } from "@nestjs/common";
 export class RoomService {
   private rooms: Map<string, any> = new Map(); // roomId => room data
 
-  createRoom(roomId: string) {
+  createRoom(roomId: string, game: any) {
     if (!this.rooms.has(roomId)) {
-      this.rooms.set(roomId, { games: [], users: [], currentGameIndex: 0 });
+      this.rooms.set(roomId, { games: game, users: [], currentGameIndex: 0 });
     }
   }
 
@@ -24,21 +24,6 @@ export class RoomService {
   getUsersInRoom(roomId: string) {
     const room = this.rooms.get(roomId);
     return room ? room.users : [];
-  }
-
-  addGameToRoom(roomId: string, game: any) {
-    const room = this.rooms.get(roomId);
-    if (room) {
-      room.games.push(game);
-    }
-  }
-
-  getNextGame(roomId: string) {
-    const room = this.rooms.get(roomId);
-    if (room) {
-      return room.games[room.currentGameIndex];
-    }
-    return null;
   }
 
 }

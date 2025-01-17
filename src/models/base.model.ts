@@ -4,7 +4,7 @@ import { AutoIncrement, Column, Model, Table } from "sequelize-typescript";
 export class BaseModel<T> extends Model<T> {
     @AutoIncrement
     @Column({ primaryKey: true, unique: true })
-    id?: string;
+    id?: number;
 
 
 
