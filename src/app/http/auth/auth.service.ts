@@ -16,7 +16,7 @@ export class AuthService {
             const user = await this._user_rep.findByEmail(body.email);
 
             //check if user exist
-            if(!user) throw new ForbiddenException("Email or Password is incorrect");
+            if(!user) throw new ForbiddenException("Email or Password is incorrect 1");
             
             //check if password is correct
             const isMatch = await bcrypt.compare(body.password, user.password);

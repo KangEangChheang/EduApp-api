@@ -1,37 +1,37 @@
-import { Injectable, LoggerService } from '@nestjs/common';
+import { Injectable, Logger, LoggerService } from '@nestjs/common';
 
 @Injectable()
 export class LogService implements LoggerService {
   log(message: string) {
-    console.log(`[INFO]: ${message}`);
+    Logger.log(`[INFO]: ${message}`);
   }
 
   error(message: string, trace: string) {
-    console.error(`[ERROR]: ${message}\nTrace: ${trace}`);
+    Logger.error(`[ERROR]: ${message}\nTrace: ${trace}`);
   }
 
   warn(message: string) {
-    console.warn(`[WARN]: ${message}`);
+    Logger.warn(`[WARN]: ${message}`);
   }
 
   debug(message: string) {
-    console.debug(`[DEBUG]: ${message}`);
+    Logger.debug(`[DEBUG]: ${message}`);
   }
 
   verbose(message: string) {
-    console.log(`[VERBOSE]: ${message}`);
+    Logger.log(`[VERBOSE]: ${message}`);
   }
 
   logRequest(req: any) {
     const { method, url } = req;
-    console.log(`[REQUEST]: ${method} | ${url}`);
+    Logger.log(`[REQUEST]: ${method} | ${url}`);
   }
 
   logResponse(res: any, statusCode: number, responseTime: number) {
-    console.log(`[RESPONSE]: ${statusCode} | ${responseTime}ms`);
+    Logger.log(`[RESPONSE]: ${statusCode} | ${responseTime}ms`);
   }
 
   logError(message: string, error: any) {
-    console.error(`[ERROR]: ${message}\n${error.stack || error.message}`);
+    Logger.error(`[ERROR]: ${message}\n${error.stack || error.message}`);
   }
 }

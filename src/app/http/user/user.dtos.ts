@@ -1,7 +1,7 @@
 import { User } from "models/user/user.model";
 
 export class UserDtos {
-    id: string;
+    id: number;
     username: string;
     avatar: string;
     created_at: Date;
