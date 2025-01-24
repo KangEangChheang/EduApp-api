@@ -9,7 +9,7 @@ export class BaseModel<T> extends Model<T> {
 
 
     /**
-     * * the postgres database will auto create this column for us incase they didnt you can uncomment this
+     * * the postgres database will auto create this column for us incase they didn't you can uncomment this
      */
     // @Column({ defaultValue: new Date() })
     // createdAt?: Date;
