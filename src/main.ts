@@ -1,7 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import { WsAdapter } from '@nestjs/platform-ws'; // WebSocket Adapter
-import { ConfigService } from '@nestjs/config';
+// import { ConfigService } from '@nestjs/config';
+import { IoAdapter } from '@nestjs/platform-socket.io';
 import "colors"
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
@@ -14,8 +15,7 @@ async function bootstrap() {
   app.useStaticAssets(join(__dirname, '..', 'public'));
 
   // Enable WebSocket support and inject config service into websocket
-  app.useWebSocketAdapter(new WsAdapter(app.getHttpServer()));
-  app.useWebSocketAdapter(new WsAdapter(app.get(ConfigService)));
+  app.useWebSocketAdapter(new IoAdapter(app));
 
   // Set a global prefix for all controllers (e.g., '/api')
   app.setGlobalPrefix('api', {
