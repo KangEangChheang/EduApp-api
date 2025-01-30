@@ -58,6 +58,7 @@ export class AuthController {
     @Post('send-otp')
     async sendOTP(@Body() body: SendOtpDto) {
 
+
         if (!body.email) {
             throw new BadRequestException('Email required');
         }
@@ -67,6 +68,8 @@ export class AuthController {
 
     @Post('verify-otp')
     async verifyOTP(@Body() body: LoginOTPDtos) {
+
+        console.log(body)
         return await this._authservice.verifyOTP(body);
     }
 

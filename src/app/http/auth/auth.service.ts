@@ -59,6 +59,7 @@ export class AuthService {
         
     }
 
+    // Create user but is_active = false. VerifyOTP to change status.
     async register(body: RegisterDtos){
         try {
 
@@ -72,7 +73,6 @@ export class AuthService {
             });
 
             if (existingUser) {
-
                 return {
                     status: true,
                     message: 'User already exist',
@@ -115,13 +115,9 @@ export class AuthService {
                 throw new BadRequestException('Email or phone is required');
             }
 
-            // Check if user exists and is active
-            const user = await User.findOne({
-                where: {
-                    [Op.or]: { email: email },
-                    // is_active: ActiveEnum.ACTIVE,
-                },
-            });
+
+            console.log(email)
+            const user = await this._user_rep.findByEmail(email);
 
             if (!user) {
                 throw new BadRequestException('User not found or inactive');
@@ -152,7 +148,7 @@ export class AuthService {
         }
     }
     
-    async verifyOTP(body: LoginOTPDtos): Promise<{ token: string; message: string }> {
+    async verifyOTP(body: LoginOTPDtos): Promise<{ token: string; user: UserDtos, message: string }> {
         try {
 
             const user = await this._user_rep.findByEmail(body.email);
@@ -182,8 +178,9 @@ export class AuthService {
             });
 
             return {
+                message: 'Login Successful',
+                user: new UserDtos(user),
                 token: token,
-                message: 'Login Successful'
             }
         } catch (error) {
             throw new UnauthorizedException(error);

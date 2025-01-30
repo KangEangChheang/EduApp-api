@@ -26,6 +26,7 @@ export class LoginOTPDtos {
 }
 
 export class RegisterDtos {
+
     @ApiProperty()
     @IsString()
     @IsNotEmpty({ message: "Email is required" })
@@ -48,10 +49,5 @@ export class SendOtpDto {
     @IsEmail({}, { message: 'Invalid email format' })
     @IsOptional()
     email?: string;
-
-    @ApiProperty()
-    @IsString()
-    @IsOptional()
-    phone?: string;
 }
 
