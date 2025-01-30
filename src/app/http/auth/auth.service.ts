@@ -1,14 +1,22 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { LoginDtos, RegisterDtos } from './auth-val.dtos';
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { LoginDtos, LoginOTPDtos, RegisterDtos } from './auth-val.dtos';
 import { UserRepository } from '../user/user.repository';
-import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcryptjs';
+import { User } from 'models/user/user.model';
+import { Op } from 'sequelize';
+import { EmailService } from 'app/services/email.service';
+import UserOTP from 'models/user/user_otps.model';
+import { JwtHelper } from 'app/common/helpers/jwt';
+import { UserDtos } from '../user/user.dtos';
 
 @Injectable()
 export class AuthService {
+
     private readonly _user_rep = new UserRepository();
+
     constructor(
-        private configService: ConfigService,
+        private readonly emailService: EmailService,
+        private readonly jwtHelper: JwtHelper
     ) {}
 
     async login(body: LoginDtos) {
@@ -16,36 +24,18 @@ export class AuthService {
             const user = await this._user_rep.findByEmail(body.email);
 
             //check if user exist
-            if(!user) throw new ForbiddenException("Email or Password is incorrect 1");
+            if(!user) throw new ForbiddenException("Email or Password is incorrect");
+
+            // Check if user is active
+            if (!user.is_active) throw new ForbiddenException("Your account is inactive. Please contact support.");
             
             //check if password is correct
             const isMatch = await bcrypt.compare(body.password, user.password);
             if(!isMatch) throw new ForbiddenException("Email or Password is incorrect");   
             
-            //set user to be active
-            user.is_active = true;
-            await user.save();
-
             return user.dataValues;
 
         } catch(error) {
-            console.log(error)
-            throw new BadRequestException(error.message);
-        }
-    }
-
-    async register(body: RegisterDtos){
-        try {
-            const user = {
-                ...body,
-                isActive: true,
-            }
-
-            const new_user = await this._user_rep.createOne(user);
-
-            return new_user;
-        }
-        catch(error) {  
             console.log(error)
             throw new BadRequestException(error.message);
         }
@@ -68,5 +58,135 @@ export class AuthService {
         else throw new NotFoundException("User not found or something went wrong try again");
         
     }
+
+    async register(body: RegisterDtos){
+        try {
+
+            const { username, email, password } = body;
+
+            // Check if the user already exists by email
+            let existingUser = await User.findOne({
+                where: {
+                    [Op.or]: [{ email }],
+                },
+            });
+
+            if (existingUser) {
+
+                return {
+                    status: true,
+                    message: 'User already exist',
+                };
+            }
+
+            const user = {
+                ...body,
+                is_active: false,
+            }
+
+            const new_user = await this._user_rep.createOne(user);
+
+            return {
+                message: "Register successfully",
+                user: new UserDtos(new_user),
+                token: this.jwtHelper.generateToken({
+                    username: new_user.username,
+                    email: new_user.email,            
+                })
+            };
+        }
+        catch(error) {  
+            console.log(error)
+            throw new BadRequestException(error.message);
+        }
+    }
+
+    // Generate a 6-digit OTP
+    private _generateOTP(): string {
+        return Math.floor(100000 + Math.random() * 900000).toString();
+    }
+
+    // Send OTP to user via email or SMS
+    async sendOTP(email: string): Promise<{ data: boolean; message: string }> {
+        try {
+
+            // Input validation
+            if (!email) {
+                throw new BadRequestException('Email or phone is required');
+            }
+
+            // Check if user exists and is active
+            const user = await User.findOne({
+                where: {
+                    [Op.or]: { email: email },
+                    // is_active: ActiveEnum.ACTIVE,
+                },
+            });
+
+            if (!user) {
+                throw new BadRequestException('User not found or inactive');
+            }
+
+            // Generate OTP and save it to the database
+            const otp = this._generateOTP();
+            await UserOTP.create({
+                user_id: user.id,
+                otp,
+                expires_at: new Date(Date.now() + 2 * 60 * 1000), // OTP valid for 2 minute
+            });
+
+            // Send OTP via email or SMS
+            await this.emailService.sendHTMLMessage(
+                user.email,
+                'Your OTP Code',
+                `<p>Your OTP code is: <strong>${otp}</strong>. It will expire in 1 minute.</p>`
+            );
+
+            return {
+                data: true,
+                message: 'OTP sent successfully'
+            };
+        } catch (error) {
+            console.error('Error sending OTP:', error);
+            throw new InternalServerErrorException('Failed to send OTP. Please try again later.');
+        }
+    }
     
+    async verifyOTP(body: LoginOTPDtos): Promise<{ token: string; message: string }> {
+        try {
+
+            const user = await this._user_rep.findByEmail(body.email);
+
+            if (!user) {
+                throw new BadRequestException('User not found');
+            }
+
+            // Check if the OTP exists and is valid
+            const userOtp = await UserOTP.findOne({
+                where: {
+                    user_id: user.id,
+                    otp: body.otp,
+                    expires_at: { [Op.gt]: new Date() }, // Ensure OTP is not expired
+                },
+            });
+
+            user.is_active = true;
+
+            // OTP is valid, delete it to prevent reuse
+            await userOtp.destroy();
+            await user.save();
+
+            const token = this.jwtHelper.generateToken({
+                username: user.username,
+                email: user.email,            
+            });
+
+            return {
+                token: token,
+                message: 'Login Successful'
+            }
+        } catch (error) {
+            throw new UnauthorizedException(error);
+        }
+    }
 }

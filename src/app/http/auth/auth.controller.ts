@@ -1,7 +1,7 @@
-import { Body, Controller, Get, HttpException, HttpStatus, NotFoundException, Post, Query, Res, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, HttpException, HttpStatus, NotFoundException, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { GuestGuard } from 'app/common/auth/guards/guest.guard';
 import { AuthService } from './auth.service';
-import { LoginDtos, RegisterDtos } from './auth-val.dtos';
+import { LoginDtos, LoginOTPDtos, RegisterDtos, SendOtpDto } from './auth-val.dtos';
 import { UserDtos } from '../user/user.dtos';
 import { JwtHelper } from 'app/common/helpers/jwt';
 import axios from 'axios';
@@ -29,12 +29,7 @@ export class AuthController {
 
     @Post("/register")
     async register(@Body() body: RegisterDtos){
-        const res = await this._authservice.register(body);
-        return {
-            message: "Register successfully",
-            user: new UserDtos(res),
-            token: this.jwtHelper.generateToken(res)
-        }
+        return await this._authservice.register(body);
     }
 
     @Post('verify-google')
@@ -60,8 +55,20 @@ export class AuthController {
         }
     }
 
+    @Post('send-otp')
+    async sendOTP(@Body() body: SendOtpDto) {
 
+        if (!body.email) {
+            throw new BadRequestException('Email required');
+        }
 
+        return await this._authservice.sendOTP(body.email);
+    }
+
+    @Post('verify-otp')
+    async verifyOTP(@Body() body: LoginOTPDtos) {
+        return await this._authservice.verifyOTP(body);
+    }
 
 
 

@@ -9,7 +9,7 @@ export class UserDtos {
     constructor(user: User) {
         this.id = user.id;
         this.username = user.username;
-        this.avatar = user.avatar;
+        // this.avatar = user.avatar;
         this.created_at = user.createdAt;
         this.email = user.email;
     }

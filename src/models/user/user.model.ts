@@ -1,6 +1,7 @@
-import { Table, Column, ForeignKey, BelongsTo, BeforeCreate, BeforeBulkCreate, BeforeUpdate } from 'sequelize-typescript';
+import { Table, Column, ForeignKey, BelongsTo, BeforeCreate, BeforeBulkCreate, BeforeUpdate, HasMany } from 'sequelize-typescript';
 import { BaseModel } from '../base.model';
 import * as bcrypt from 'bcryptjs';
+import UserOTP from './user_otps.model';
 
 @Table
 export class User extends BaseModel<User> {
@@ -22,6 +23,9 @@ export class User extends BaseModel<User> {
 
     @Column({ defaultValue: true })
     is_active!: boolean;
+
+    @HasMany(() => UserOTP)
+    otps: UserOTP[];
 
     //=============================
     

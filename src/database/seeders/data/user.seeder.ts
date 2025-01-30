@@ -15,11 +15,11 @@ export const userSeeder = async () => {
                 username: 'student',
                 password: 'student',
             },
-            {
-                email: 'mingfongmen@gmail.com',
-                username: 'Choeng Kimlay',
-                password: '123456',
-            },
+            // {
+            //     email: 'mingfongmen@gmail.com',
+            //     username: 'Choeng Kimlay',
+            //     password: '123456',
+            // },
         ];
 
         await User.bulkCreate(users, { validate: true });
