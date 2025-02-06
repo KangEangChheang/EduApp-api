@@ -171,6 +171,7 @@ export class AuthService {
             await user.save();
 
             const token = this.jwtHelper.generateToken({
+                id: user.id,
                 username: user.username,
                 email: user.email,            
             });
@@ -217,7 +218,6 @@ export class AuthService {
     async resetPassword(body: { email: string; password: string }): Promise<{ message: string }> {
         try {
 
-            console.log(body)
             const user = await this._user_rep.findByEmail(body.email);
     
             if (!user) {

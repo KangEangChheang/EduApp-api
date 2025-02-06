@@ -9,7 +9,7 @@ import { AppController } from './app.controller';
 
 @Module({
   controllers: [
-    AppController
+    AppController,
   ],
   imports: [
     // all http module ======================================
@@ -21,10 +21,10 @@ import { AppController } from './app.controller';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
-    })
+    }),
   ],
   providers: [
-    LogService, // add logger service
+    LogService,
   ],
 })
 export class AppModule implements NestModule {
