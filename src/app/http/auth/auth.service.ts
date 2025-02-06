@@ -1,5 +1,5 @@
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { LoginDtos, LoginOTPDtos, RegisterDtos } from './auth-val.dtos';
+import { LoginDtos, VerifyOTPDtos, RegisterDtos } from './auth-val.dtos';
 import { UserRepository } from '../user/user.repository';
 import * as bcrypt from 'bcryptjs';
 import { User } from 'models/user/user.model';
@@ -115,8 +115,6 @@ export class AuthService {
                 throw new BadRequestException('Email or phone is required');
             }
 
-
-            console.log(email)
             const user = await this._user_rep.findByEmail(email);
 
             if (!user) {
@@ -128,7 +126,7 @@ export class AuthService {
             await UserOTP.create({
                 user_id: user.id,
                 otp,
-                expires_at: new Date(Date.now() + 2 * 60 * 1000), // OTP valid for 2 minute
+                expires_at: new Date(Date.now() + 1 * 60 * 1000), // OTP valid for 2 minute
             });
 
             // Send OTP via email or SMS
@@ -148,7 +146,7 @@ export class AuthService {
         }
     }
     
-    async verifyOTP(body: LoginOTPDtos): Promise<{ token: string; user: UserDtos, message: string }> {
+    async verifyOTP(body: VerifyOTPDtos): Promise<{ token: string; user: UserDtos, message: string }> {
         try {
 
             const user = await this._user_rep.findByEmail(body.email);
@@ -186,4 +184,63 @@ export class AuthService {
             throw new UnauthorizedException(error);
         }
     }
+
+    async verifyResetOTP(body: VerifyOTPDtos): Promise<{ message: string }> {
+        try {
+
+            const user = await this._user_rep.findByEmail(body.email);
+
+            if (!user) {
+                throw new BadRequestException('User not found');
+            }
+
+            // Check if the OTP exists and is valid
+            const userOtp = await UserOTP.findOne({
+                where: {
+                    user_id: user.id,
+                    otp: body.otp,
+                    expires_at: { [Op.gt]: new Date() }, // Ensure OTP is not expired
+                },
+            });
+
+            // OTP is valid, delete it to prevent reuse
+            await userOtp.destroy();
+
+            return {
+                message: 'OTP verified successfully. Please reset your password.',
+            }
+        } catch (error) {
+            throw new UnauthorizedException(error);
+        }
+    }
+
+    async resetPassword(body: { email: string; password: string }): Promise<{ message: string }> {
+        try {
+
+            console.log(body)
+            const user = await this._user_rep.findByEmail(body.email);
+    
+            if (!user) {
+                throw new BadRequestException('User with this email does not exist.');
+            }
+    
+            const hashedPassword = await bcrypt.hash(body.password, 10);
+    
+            const [updated] = await User.update(
+                { password: hashedPassword },  
+                { where: { email: body.email } }
+            );
+    
+            if (updated === 0) {
+                throw new BadRequestException('Failed to update password. Please try again.');
+            }
+    
+            return {
+                message: 'Password reset successfully. Please log in with the new password.',
+            };
+        } catch (error) {
+            throw new InternalServerErrorException('Failed to reset the password. Please try again later.');
+        }
+    }
+
 }

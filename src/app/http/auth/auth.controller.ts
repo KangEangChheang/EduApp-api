@@ -1,7 +1,7 @@
 import { BadRequestException, Body, Controller, Get, HttpException, HttpStatus, NotFoundException, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { GuestGuard } from 'app/common/auth/guards/guest.guard';
 import { AuthService } from './auth.service';
-import { LoginDtos, LoginOTPDtos, RegisterDtos, SendOtpDto } from './auth-val.dtos';
+import { LoginDtos, VerifyOTPDtos, RegisterDtos, SendOtpDto } from './auth-val.dtos';
 import { UserDtos } from '../user/user.dtos';
 import { JwtHelper } from 'app/common/helpers/jwt';
 import axios from 'axios';
@@ -67,12 +67,22 @@ export class AuthController {
     }
 
     @Post('verify-otp')
-    async verifyOTP(@Body() body: LoginOTPDtos) {
+    async verifyOTP(@Body() body: VerifyOTPDtos) {
 
-        console.log(body)
         return await this._authservice.verifyOTP(body);
     }
 
+    @Post('verify-reset-otp')
+    async verifyResetOTP(@Body() body: VerifyOTPDtos) {
+
+        return await this._authservice.verifyResetOTP(body);
+    }
+
+    @Post('reset-password')
+    async resetPassword(@Body() body: { email: string; password: string }) {
+
+        return await this._authservice.resetPassword(body);
+    }
 
 
 

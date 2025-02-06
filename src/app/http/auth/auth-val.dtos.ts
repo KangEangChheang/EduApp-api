@@ -13,7 +13,7 @@ export class LoginDtos {
     password: string;
 }
 
-export class LoginOTPDtos {
+export class VerifyOTPDtos {
     @ApiProperty()
     @IsString()
     @IsNotEmpty({ message: "Email is required" })
