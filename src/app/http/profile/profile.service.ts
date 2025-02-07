@@ -33,6 +33,7 @@ export class ProfileService {
                 id: user.id,
                 username: user.username,
                 email: user.email,            
+                createdAt: user.createdAt,            
             });
 
             return {
