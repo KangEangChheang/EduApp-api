@@ -8,6 +8,7 @@ import { EmailService } from 'app/services/email.service';
 import UserOTP from 'models/user/user_otps.model';
 import { JwtHelper } from 'app/common/helpers/jwt';
 import { UserDtos } from '../user/user.dtos';
+import { CreatedAt } from 'sequelize-typescript';
 
 @Injectable()
 export class AuthService {
@@ -88,11 +89,6 @@ export class AuthService {
 
             return {
                 message: "Register successfully",
-                user: new UserDtos(new_user),
-                token: this.jwtHelper.generateToken({
-                    username: new_user.username,
-                    email: new_user.email,            
-                })
             };
         }
         catch(error) {  
@@ -174,6 +170,7 @@ export class AuthService {
                 id: user.id,
                 username: user.username,
                 email: user.email,            
+                createdAt: user.createdAt,            
             });
 
             return {
