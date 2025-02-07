@@ -166,12 +166,7 @@ export class AuthService {
             await userOtp.destroy();
             await user.save();
 
-            const token = this.jwtHelper.generateToken({
-                id: user.id,
-                username: user.username,
-                email: user.email,            
-                createdAt: user.createdAt,            
-            });
+            const token = this.jwtHelper.generateToken(user.dataValues)
 
             return {
                 message: 'Login Successful',

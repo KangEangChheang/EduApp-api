@@ -21,20 +21,13 @@ export class ProfileService {
             }, { where: { id: user_ID } });
 
             // Fetch the updated user details (including their roles)
-            const user = await User.findByPk(user_ID, {
-                attributes: ['id', 'username', 'email',],
-            });
+            const user = await User.findByPk(user_ID);
 
             if (!user) {
                 throw new BadRequestException('User not found');
             }
 
-            const token = this.jwtHelper.generateToken({
-                id: user.id,
-                username: user.username,
-                email: user.email,            
-                createdAt: user.createdAt,            
-            });
+            const token = this.jwtHelper.generateToken(user.dataValues)
 
             return {
                 message: 'Profile updated successfully',
